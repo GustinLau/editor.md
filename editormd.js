@@ -217,7 +217,7 @@
             if (res.status) {
                 return res.data[0];
             } else {
-                alert("上传失败：", res.msg);
+                return null;
             }
         },
         ajaxUploadHeaders: {},               // 上传头
@@ -855,10 +855,9 @@
                             event.stopPropagation();
                             event.preventDefault();
                             // 校验
-                            var isImage   = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$");
+                            var isImage = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$");
                             var fileName = clipboardData.getData('text/plain');
-                            if (!isImage.test(fileName))
-                            {
+                            if (!isImage.test(fileName)) {
                                 alert(this.lang.dialog.image.formatNotAllowed + settings.imageFormats.join(", "));
                                 return;
                             }
