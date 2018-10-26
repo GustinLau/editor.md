@@ -163,13 +163,13 @@
                                     region: token.region
                                 });
                                 client.multipartUpload(key, fileInput[0].files[0])
-                                    .then(result => {
+                                    .then(function(result){
                                         loading(false);
                                         var url = result.res.requestUrls[0];
                                         url = url.indexOf('?') !== -1 ? url.substring(0, url.indexOf('?')) : url;
                                         dialog.find("[data-url]").val(url);
                                     })
-                                    .catch(reason => {
+                                    .catch(function(reason){
                                         loading(false);
                                         alert(reason);
                                     });
