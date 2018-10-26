@@ -165,7 +165,9 @@
                                 client.multipartUpload(key, fileInput[0].files[0])
                                     .then(result => {
                                         loading(false);
-                                        dialog.find("[data-url]").val(result.res.requestUrls[0]);
+                                        var url = result.res.requestUrls[0];
+                                        url = url.indexOf('?') !== -1 ? url.substring(0, url.indexOf('?')) : url;
+                                        dialog.find("[data-url]").val(url);
                                     })
                                     .catch(reason => {
                                         loading(false);

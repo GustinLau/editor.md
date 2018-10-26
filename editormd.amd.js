@@ -960,7 +960,7 @@
                                                     // 成功返回
                                                     val = '![' + fileName + '](' + res + ')';
                                                 } else {
-                                                    console.err(res);
+                                                    console.error(res);
                                                     val = '【上传失败】';
                                                 }
                                                 _this.replaceSelection(val);
@@ -984,7 +984,7 @@
                                                         val = '【上传失败】';
                                                     }
                                                 } else {
-                                                    console.err(res);
+                                                    console.error(res);
                                                     val = '【上传失败】';
                                                     _this.replaceSelection(val);
                                                 }
@@ -1009,7 +1009,7 @@
                                             // 成功返回
                                             val = '![' + fileName + '](' + res + ')';
                                         } else {
-                                            console.err(res);
+                                            console.error(res);
                                             val = '【上传失败】';
                                         }
                                         _this.replaceSelection(val);
@@ -1033,7 +1033,7 @@
                                                 val = '【上传失败】';
                                             }
                                         } else {
-                                            console.err(res);
+                                            console.error(res);
                                             val = '【上传失败】';
                                         }
                                         _this.replaceSelection(val);
@@ -1140,7 +1140,9 @@
                 client.multipartUpload(key, file)
                     .then(result => {
                         if (callback) {
-                            callback(true, result.res.requestUrls[0]);
+                            var url = result.res.requestUrls[0];
+                            url = url.indexOf('?') !== -1 ? url.substring(0, url.indexOf('?')) : url;
+                            callback(true,url);
                         }
                     })
                     .catch(reason => {
