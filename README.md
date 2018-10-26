@@ -11,6 +11,61 @@
 
 **Editor.md** : The open source embeddable online markdown editor (component), based on CodeMirror & jQuery & Marked.
 
+### 写在最前
+
+   fork之后发现居然编译不了，然后看issue找到了另外一个仓库https://github.com/hawtim/editor.md，非常感谢，然后更新了一下下，然后顺便升级了一下marked库，表格最后一个为空时会消失的Bug修复了。  
+   顺便参考了一下http://www.chairis.cn/blog/article/15 这篇文字，把代码复制了一下下，把粘贴图片也加上了，但是只能复制一张，多都不行，原因：未解之谜
+   然后平时都有阿里的oss,顺便也加上了，因为oss的sdk好像只能在现代浏览器运行，所以不兼容了，粘贴也没兼容的，8012年了大哥。  
+   http://www.chairis.cn/blog/article/15 这篇文字提到了一个前端压缩的库https://github.com/think2011/localResizeIMG，好像有bug,而且不更新了，如果遇到问题不要开就是了  
+   
+   以下是使用方法
+   
+   新增配置
+   ```javascript
+    resizeImageBeforeUpload: false,     // 上传图片前是否压缩
+    resizeImageMaxWidth: 0,             // 图片最大不超过的宽度，默认为原图宽度，高度不设时会适应宽度。
+    resizeImageMaxHeight: 0,            // 同上
+    resizeImageQuality: 0.7,            // 图片压缩质量，取值 0 - 1，默认为0.7
+    autoUploadPasteImage: false,        // imageUpload为true有效，自动上传粘贴的图片
+    parseAjaxResponse: function (res) {	// 返回url 返回null标识上传失败
+                if (res.status) {
+                    return res.data.url;
+                } else {
+                    return null;
+                }
+    },
+    ajaxUploadHeader: {},                // 上传头         粘贴用的
+    ajaxUploadParams: {},                // 附带参数       粘贴用的
+    ajaxUploadFileKey: "file",           // 上传参数名称    粘贴用的
+    // 开启oss的话用按钮上传和粘贴都是上传到oss
+	sts: "",                             // imageUpload为true有效，阿里OSS直连上传Token服务器地址，优先级高于imageUploadURL
+    stsRequestHeaders: {},               // SecurityToken请求头
+    stsRequestParams: {},                 // SecurityToken附带参数 例如{"token":"helloworld"}
+    ossImageUploadFolder: "editormd/image",  // 非'/'开头和结尾
+   ```  
+   
+   sts要返回的数据格式
+   ```json
+   {
+       "data":{
+           "code":"success",    
+           "accessKeyId":"accessKeyId",
+           "accessKeySecret":"accessKeySecret",
+           "securityToken":"securityToken",
+           "bucket":"bucket",
+           "endpoint":"oss-cn-shenzhen.aliyuncs.com",
+           "region":"cn-shenzhen",
+           "expiration":"2018-10-26T10:42:19Z"
+       },
+       "status":true
+   }
+   ```
+
+    
+其他关于sts的请参考阿里云文档 https://help.aliyun.com/document_detail/31926.html?spm=a2c4g.11174283.6.643.1ddc7da2K8yvQP
+
+以上
+
 ### Features
 
 - Support Standard Markdown / CommonMark and GFM (GitHub Flavored Markdown);
