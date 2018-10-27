@@ -46,9 +46,10 @@
                 var accept = '';
                 var imageFormats = settings.imageFormats;
                 for (var i = 0; i < imageFormats.length; i++) {
-                    accept += 'image/' + imageFormats[i] + " "
+                    accept += 'image/' + imageFormats[i] + ","
                 }
-                var dialogContent = ((settings.imageUpload) ? "<form novalidate=\"novalidate\" action=\"" + action + "\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">") +
+                accept = accept.substring(0, accept.lastIndexOf(','));
+                var dialogContent = ((settings.imageUpload) ? "<form novalidate action=\"" + action + "\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">") +
                     ((settings.imageUpload) ? "<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" guid=\"" + guid + "\"></iframe>" : "") +
                     "<label>" + imageLang.url + "</label>" +
                     "<input type=\"text\" data-url />" + (function () {
@@ -156,13 +157,13 @@
                                     region: token.region
                                 });
                                 client.multipartUpload(key, fileInput[0].files[0])
-                                    .then(function(result){
+                                    .then(function (result) {
                                         loading(false);
                                         var url = result.res.requestUrls[0];
                                         url = url.indexOf('?') !== -1 ? url.substring(0, url.indexOf('?')) : url;
                                         dialog.find("[data-url]").val(url);
                                     })
-                                    .catch(function(reason){
+                                    .catch(function (reason) {
                                         loading(false);
                                         alert(reason);
                                     });
