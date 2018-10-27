@@ -819,6 +819,7 @@
         },
 
         uploadPaste(event, settings) {
+
             var _this = this;
             var clipboardData = (event.originalEvent.clipboardData || window.clipboardData);
             var items, item, types;
@@ -835,6 +836,9 @@
                         break;
                     }
                 }
+                if (types.length === 1 && !!item) {
+                    types = ['text/plain', 'Files'];
+                }
                 if (types.length === 2) {
                     if (types[0] === 'text/plain' && types[1] === 'Files') {
                         // 复制图片文件
@@ -845,7 +849,7 @@
                             // 校验
                             var isImage = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$");
                             var fileName = clipboardData.getData('text/plain');
-                            if (!isImage.test(fileName)) {
+                            if (!!fileName && !isImage.test(fileName)) {
                                 alert(this.lang.dialog.image.formatNotAllowed + settings.imageFormats.join(", "));
                                 return;
                             }
@@ -1060,7 +1064,7 @@
                         if (callback) {
                             var url = result.res.requestUrls[0];
                             url = url.indexOf('?') !== -1 ? url.substring(0, url.indexOf('?')) : url;
-                            callback(true,url);
+                            callback(true, url);
                         }
                     })
                     .catch(reason => {

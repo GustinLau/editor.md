@@ -48,7 +48,7 @@
                 for (var i = 0; i < imageFormats.length; i++) {
                     accept += 'image/' + imageFormats[i] + " "
                 }
-                var dialogContent = ((settings.imageUpload) ? "<form action=\"" + action + "\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">") +
+                var dialogContent = ((settings.imageUpload) ? "<form novalidate=\"novalidate\" action=\"" + action + "\" target=\"" + iframeName + "\" method=\"post\" enctype=\"multipart/form-data\" class=\"" + classPrefix + "form\">" : "<div class=\"" + classPrefix + "form\">") +
                     ((settings.imageUpload) ? "<iframe name=\"" + iframeName + "\" id=\"" + iframeName + "\" guid=\"" + guid + "\"></iframe>" : "") +
                     "<label>" + imageLang.url + "</label>" +
                     "<input type=\"text\" data-url />" + (function () {
@@ -128,7 +128,7 @@
 
                 fileInput.bind("change", function () {
                     var fileName = fileInput.val();
-                    var isImage = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$"); // /(\.(webp|jpg|jpeg|gif|bmp|png))$/
+                    var isImage = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$/i"); // /(\.(webp|jpg|jpeg|gif|bmp|png))$/
 
                     if (fileName === "") {
                         alert(imageLang.uploadFileEmpty);
