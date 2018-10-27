@@ -128,16 +128,9 @@
 
                 fileInput.bind("change", function () {
                     var fileName = fileInput.val();
-                    var isImage = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$/i"); // /(\.(webp|jpg|jpeg|gif|bmp|png))$/
 
                     if (fileName === "") {
                         alert(imageLang.uploadFileEmpty);
-
-                        return false;
-                    }
-
-                    if (!isImage.test(fileName)) {
-                        alert(imageLang.formatNotAllowed + settings.imageFormats.join(", "));
 
                         return false;
                     }
