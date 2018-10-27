@@ -138,7 +138,7 @@
 
                     loading(true);
 
-                    var submitHandler = function () {
+                    var submitHandler = function (e) {
                         if (!!settings.sts) {
 
                             var originName = fileName;
@@ -148,6 +148,10 @@
                             }
                             key = settings.ossImageUploadFolder + "/" + _this.fileNameGenerator(originName);
                             _this.stsToken(function (token) {
+                                if(!token){
+                                    loading(false);
+                                    return false;
+                                }
                                 var client = new OSS({
                                     accessKeyId: token.accessKeyId,
                                     accessKeySecret: token.accessKeySecret,
@@ -189,7 +193,6 @@
                                         alert(json.message);
                                     }
                                 }
-
                                 return false;
                             };
                         }
