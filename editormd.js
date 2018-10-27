@@ -10,7 +10,7 @@
  * @updateTime  2018-10-27
  */
 
-;(function (factory) {
+; (function (factory) {
     "use strict"
 
     // CommonJS/Node.js
@@ -848,100 +848,44 @@
                         break;
                     }
                 }
-                if (types.length === 1 && !!item) {
-                    types = ['text/plain', 'Files'];
-                }
-                if (types.length === 2) {
-                    if (types[0] === 'text/plain' && types[1] === 'Files') {
-                        // 复制图片文件
-                        // 判断是否为图片数据
-                        if (item && item.kind === 'file' && item.type.match(/^image\//i)) {
-                            event.stopPropagation();
-                            event.preventDefault();
-                            // 校验
-                            var isImage = new RegExp("(\\.(" + settings.imageFormats.join("|") + "))$");
-                            var fileName = clipboardData.getData('text/plain');
-                            if (!!fileName && !isImage.test(fileName)) {
-                                alert(this.lang.dialog.image.formatNotAllowed + settings.imageFormats.join(", "));
-                                return;
+                // 判断是否为图片数据
+                if (item && item.kind === 'file' && item.type.match(/^image\//i)) {
+                     // 读取该图片
+                     var file = item.getAsFile();
+                     if (!file) {
+                         // 有的浏览器会拿不到，原因未解之谜
+                         return;
+                     }
+                    event.stopPropagation();
+                    event.preventDefault();
+            
+                    var fromRange = _this.cm.getCursor();
+                    var placeholder = '【上传中...】';
+                    _this.insertValue(placeholder);
+                    var toRange = _this.cm.getCursor();
+
+                    if (settings.resizeImageBeforeUpload) {
+                        var reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = function () {
+                            //前端压缩
+                            var opts = {};
+                            if (settings.resizeImageMaxWidth > 0) {
+                                opts.width = settings.resizeImageMaxWidth;
                             }
-                            // 读取该图片
-                            var file = item.getAsFile();
-                            var fromRange = _this.cm.getCursor();
-                            var placeholder = '【上传中...】';
-                            _this.insertValue(placeholder);
-                            var toRange = _this.cm.getCursor();
-                            if (settings.resizeImageBeforeUpload) {
-                                var reader = new FileReader();
-                                reader.readAsDataURL(file);
-                                reader.onload = function () {
-                                    //前端压缩
-                                    var opts = {};
-                                    if (settings.resizeImageMaxWidth > 0) {
-                                        opts.width = settings.resizeImageMaxWidth;
-                                    }
-                                    if (settings.resizeImageMaxHeight > 0) {
-                                        opts.height = settings.resizeImageMaxHeight;
-                                    }
-                                    lrz(reader.result, opts).then(function (rst) {
-                                        if (!!settings.sts) {
-                                            // oss 上传
-                                            _this.ossUpload(rst.file, 'image', function (status, res) {
-                                                var currentCursor = _this.getCursor();
-                                                _this.setSelection(fromRange, toRange);
-                                                var val;
-                                                if (status) {
-                                                    // 成功返回
-                                                    val = '![' + fileName + '](' + res + ')';
-                                                } else {
-                                                    console.error(res);
-                                                    val = '【上传失败】';
-                                                }
-                                                _this.replaceSelection(val);
-                                                if (currentCursor.line === _this.getCursor().line) {    // 同一行
-                                                    currentCursor.ch += val.length - placeholder.length;
-                                                }
-                                                _this.setCursor(currentCursor);
-                                            });
-                                        } else {
-                                            // 普通上传
-                                            _this.ajaxUpload(rst.file, function (status, res) {
-                                                var currentCursor = _this.getCursor();
-                                                _this.setSelection(fromRange, toRange);
-                                                var val;
-                                                if (status) {
-                                                    // 成功返回
-                                                    var url = settings.parseAjaxResponse(res);
-                                                    if (!!url) {
-                                                        val = '![' + fileName + '](' + url + ')';
-                                                    } else {
-                                                        val = '【上传失败】';
-                                                    }
-                                                } else {
-                                                    console.error(res);
-                                                    val = '【上传失败】';
-                                                    _this.replaceSelection(val);
-                                                }
-                                                _this.replaceSelection(val);
-                                                if (currentCursor.line === _this.getCursor().line) {    // 同一行
-                                                    currentCursor.ch += val.length - placeholder.length;
-                                                }
-                                                _this.setCursor(currentCursor);
-                                            })
-                                        }
-                                    });
-                                }
-                            } else {
-                                // 不压缩
+                            if (settings.resizeImageMaxHeight > 0) {
+                                opts.height = settings.resizeImageMaxHeight;
+                            }
+                            lrz(reader.result, opts).then(function (rst) {
                                 if (!!settings.sts) {
                                     // oss 上传
-                                    _this.ossUpload(file, 'image', function (status, res) {
+                                    _this.ossUpload(rst.file, 'image', function (status, res) {
                                         var currentCursor = _this.getCursor();
                                         _this.setSelection(fromRange, toRange);
                                         var val;
                                         if (status) {
                                             // 成功返回
-                                            val = '![' + fileName + '](' + res + ')';
+                                            val = '![](' + res + ')';
                                         } else {
                                             console.error(res);
                                             val = '【上传失败】';
@@ -951,10 +895,10 @@
                                             currentCursor.ch += val.length - placeholder.length;
                                         }
                                         _this.setCursor(currentCursor);
-                                    })
+                                    });
                                 } else {
                                     // 普通上传
-                                    _this.ajaxUpload(file, function (status, res) {
+                                    _this.ajaxUpload(rst.file, function (status, res) {
                                         var currentCursor = _this.getCursor();
                                         _this.setSelection(fromRange, toRange);
                                         var val;
@@ -962,13 +906,14 @@
                                             // 成功返回
                                             var url = settings.parseAjaxResponse(res);
                                             if (!!url) {
-                                                val = '![' + fileName + '](' + url + ')';
+                                                val = '![](' + url + ')';
                                             } else {
                                                 val = '【上传失败】';
                                             }
                                         } else {
                                             console.error(res);
                                             val = '【上传失败】';
+                                            _this.replaceSelection(val);
                                         }
                                         _this.replaceSelection(val);
                                         if (currentCursor.line === _this.getCursor().line) {    // 同一行
@@ -977,10 +922,58 @@
                                         _this.setCursor(currentCursor);
                                     })
                                 }
-                            }
+                            });
+                        }
+                    } else {
+                        // 不压缩
+                        if (!!settings.sts) {
+                            // oss 上传
+                            _this.ossUpload(file, 'image', function (status, res) {
+                                var currentCursor = _this.getCursor();
+                                _this.setSelection(fromRange, toRange);
+                                var val;
+                                if (status) {
+                                    // 成功返回
+                                    val = '![](' + res + ')';
+                                } else {
+                                    console.error(res);
+                                    val = '【上传失败】';
+                                }
+                                _this.replaceSelection(val);
+                                if (currentCursor.line === _this.getCursor().line) {    // 同一行
+                                    currentCursor.ch += val.length - placeholder.length;
+                                }
+                                _this.setCursor(currentCursor);
+                            })
+                        } else {
+                            // 普通上传
+                            _this.ajaxUpload(file, function (status, res) {
+                                var currentCursor = _this.getCursor();
+                                _this.setSelection(fromRange, toRange);
+                                var val;
+                                if (status) {
+                                    // 成功返回
+                                    var url = settings.parseAjaxResponse(res);
+                                    if (!!url) {
+                                        val = '![](' + url + ')';
+                                    } else {
+                                        val = '【上传失败】';
+                                    }
+                                } else {
+                                    console.error(res);
+                                    val = '【上传失败】';
+                                }
+                                _this.replaceSelection(val);
+                                if (currentCursor.line === _this.getCursor().line) {    // 同一行
+                                    currentCursor.ch += val.length - placeholder.length;
+                                }
+                                _this.setCursor(currentCursor);
+                            })
                         }
                     }
                 }
+
+
             }
         },
         /**
@@ -1028,11 +1021,13 @@
                         callback(this._cachedToken);
                     } else {
                         alert('获取Token失败');
+                        callback(null);
                     }
                 },
                 error: (e) => {
                     console.error(e);
                     alert('获取Token失败');
+                    callback(null);
                 }
             });
         },
@@ -1063,6 +1058,10 @@
                 key = this.settings.ossImageUploadFolder + "/" + this.fileNameGenerator(originName);
             }
             this.stsToken(function (token) {
+                if (!token) {
+                    callback(false, '获取Token失败')
+                    return;
+                }
                 var client = new OSS({
                     accessKeyId: token.accessKeyId,
                     accessKeySecret: token.accessKeySecret,
@@ -1209,10 +1208,10 @@
                 alert("Error: The line number range 1-" + count)
                 return this
             }
-            cm.setCursor({line: line, ch: 0})
+            cm.setCursor({ line: line, ch: 0 })
             var scrollInfo = cm.getScrollInfo()
             var clientHeight = scrollInfo.clientHeight
-            var coords = cm.charCoords({line: line, ch: 0}, "local")
+            var coords = cm.charCoords({ line: line, ch: 0 }, "local")
             cm.scrollTo(null, (coords.top + coords.bottom - clientHeight) / 2)
             if (settings.watch) {
                 var cmScroll = this.codeMirror.find(".CodeMirror-scroll")[0]
@@ -1458,8 +1457,8 @@
                 typeof settings.toolbarIcons === "function"
                     ? settings.toolbarIcons()
                     : typeof settings.toolbarIcons === "string"
-                    ? editormd.toolbarModes[settings.toolbarIcons]
-                    : settings.toolbarIcons
+                        ? editormd.toolbarModes[settings.toolbarIcons]
+                        : settings.toolbarIcons
             var toolbarMenu = toolbar.find("." + this.classPrefix + "menu"),
                 menu = ""
             var pullRight = false
@@ -1840,7 +1839,7 @@
             if (settings.sequenceDiagram) {
                 previewContainer
                     .find(".sequence-diagram")
-                    .sequenceDiagram({theme: "simple"})
+                    .sequenceDiagram({ theme: "simple" })
             }
             var preview = $this.preview
             var codeMirror = $this.codeMirror
@@ -2893,7 +2892,7 @@
      */
 
     editormd.dialogLockScreen = function () {
-        var settings = this.settings || {dialogLockScreen: true}
+        var settings = this.settings || { dialogLockScreen: true }
         if (settings.dialogLockScreen) {
             $("html,body").css("overflow", "hidden")
             this.resize()
@@ -2910,7 +2909,7 @@
 
     editormd.dialogShowMask = function (dialog) {
         var editor = this.editor
-        var settings = this.settings || {dialogShowMask: true}
+        var settings = this.settings || { dialogShowMask: true }
         dialog.css({
             top: ($(window).height() - dialog.height()) / 2 + "px",
             left: ($(window).width() - dialog.width()) / 2 + "px"
@@ -3529,7 +3528,7 @@
                 if (settings.emailLink) {
                     text = text.replace(emailLinkReg, function ($1, $2, $3, $4, $5) {
                         return !$2 &&
-                        $.inArray($5, "jpg|jpeg|png|gif|webp|ico|icon|pdf".split("|")) < 0
+                            $.inArray($5, "jpg|jpeg|png|gif|webp|ico|icon|pdf".split("|")) < 0
                             ? '<a href="mailto:' + $1 + '">' + $1 + "</a>"
                             : $1
                     })
@@ -3816,7 +3815,7 @@
                             var firstA = li.children("a").first()
                             if (firstA.children(".fa").length < 1) {
                                 firstA.append(
-                                    $(icon).css({float: "right", paddingTop: "4px"})
+                                    $(icon).css({ float: "right", paddingTop: "4px" })
                                 )
                             }
                         }
@@ -4031,7 +4030,7 @@
                 div.find(".flowchart").flowChart()
             }
             if (settings.sequenceDiagram) {
-                div.find(".sequence-diagram").sequenceDiagram({theme: "simple"})
+                div.find(".sequence-diagram").sequenceDiagram({ theme: "simple" })
             }
         }
         if (settings.tex) {

@@ -17,6 +17,7 @@ var minifycss    = require("gulp-minify-css");
 var pkg          = require("./package.json");
 var dateFormat   = require("dateformatter").format;
 var replace      = require("gulp-replace");
+var server = require('gulp-devserver');
 
 pkg.name         = "Editor.md";
 pkg.today        = dateFormat;
@@ -339,6 +340,19 @@ gulp.task("watch", function() {
 	gulp.watch("scss/editormd.logo.scss", ["scss", "scss3"]);
 	gulp.watch("src/editormd.js", ["js", "amd"]);
 });
+
+gulp.task('serve', function () {
+    gulp.watch("src/editormd.js", ["js"]);
+    gulp.src('./')
+      .pipe(server({
+        livereload: {
+            clientConsole: true,
+            filter: function(filename) {
+                return !/\/\.git\/|\/node_modules\/|\/src\//.test(filename);
+            }
+        }
+       }));
+  });
 
 gulp.task("default", function() {
     gulp.run("scss");
