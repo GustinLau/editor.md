@@ -13,13 +13,13 @@
 
 ### 写在最前
 
-   fork之后发现居然编译不了，然后看issue找到了另外一个仓库https://github.com/hawtim/editor.md，非常感谢，然后更新了一下下，然后顺便升级了一下marked库，表格最后一个为空时会消失的Bug修复了。  
+   fork之后发现居然编译不了，然后看issue找到了另外一个仓库https://github.com/hawtim/editor.md ，非常感谢，然后更新了一下下，然后顺便升级了一下marked库，表格最后一个为空时会消失的Bug修复了。  
      
    顺便参考了一下http://www.chairis.cn/blog/article/15 这篇文字，把代码复制了一下下，把粘贴图片也加上了，但是只能复制一张，多都不行，原因：未解之谜
    
-   然后平时都有阿里的oss,顺便也加上了，因为oss的sdk好像只能在现代浏览器运行，所以不兼容了，粘贴也没兼容的，8012年了大哥。
+   然后平时都有阿里的oss,顺便也加上了，因为oss的sdk好像只能在现代浏览器运行，所以不兼容了。
      
-   http://www.chairis.cn/blog/article/15 这篇文字提到了一个前端压缩的库https://github.com/think2011/localResizeIMG，好像有bug,而且不更新了，如果遇到问题不要开就是了  
+   http://www.chairis.cn/blog/article/15 这篇文字提到了一个前端压缩的库https://github.com/think2011/localResizeIMG ，好像有bug,而且不更新了，如果遇到问题不要开就是了  
    
    以下是使用方法
    
